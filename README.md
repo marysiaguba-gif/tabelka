@@ -1,4 +1,4 @@
-## Szczegółowa tabela czasu – projekt „GamesZone”
+## Szczegółowa tabela czasu
 
 | Etap pracy | Co dokładnie było robione | Szacowany czas |
 |------------|---------------------------|----------------|
