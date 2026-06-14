@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GamesZone</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Merriweather',serif;
+  background:#050507;
+  color:#fff;
+  font-weight:500;
+}
+
+header{
+  padding:3rem 2rem;
+  text-align:center;
+  background:
+    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.9)),
+    url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1400&q=60');
+  background-size:cover;
+  background-position:center;
+  border-bottom:2px solid #ff0033;
+  box-shadow:0 0 25px #ff0033;
+}
+
+h1{
+  color:#ff0033;
+  font-size:3rem;
+  text-shadow:0 0 10px #ff0033;
+  font-weight:700;
+}
+
+.controls{
+  display:flex;
+  gap:1rem;
+  justify-content:center;
+  flex-wrap:wrap;
+  padding:1rem;
+}
+
+input,select,button{
+  padding:0.7rem 1rem;
+  border-radius:8px;
+  border:1px solid #ff0033;
+  background:#0b0b0f;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 0 10px #ff003355;
+  font-family:'Merriweather',serif;
+}
+
+button:hover{
+  background:#ff0033;
+  color:#000;
+}
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:200px;
+  height:100%;
+  background:#0b0b0f;
+  border-right:2px solid #ff0033;
+  padding-top:2rem;
+  box-shadow:0 0 20px #ff003322;
+}
+
+.sidebar h3{
+  color:#ff0033;
+  text-align:center;
+  margin-bottom:1rem;
+}
+
+.sidebar-liked{
+  width:100%;
+  padding:0.8rem;
+  background:#0b0b0f;
+  border:none;
+  color:#ff0033;
+  font-weight:700;
+  cursor:pointer;
+  border-bottom:1px solid #ff0033;
+}
+
+.sidebar-liked:hover{
+  background:#ff003320;
+}
+
+.cat-btn{
+  display:block;
+  width:100%;
+  padding:0.7rem;
+  background:none;
+  border:none;
+  color:#fff;
+  text-align:left;
+  cursor:pointer;
+  border-left:3px solid transparent;
+}
+
+.cat-btn:hover{
+  background:#ff003320;
+}
+
+.cat-btn.active{
+  border-left:3px solid #ff0033;
+  color:#ff0033;
+}
+
+.main{
+  margin-left:200px;
+}
+
+.section-title{
+  max-width:1200px;
+  margin:1.5rem auto 0;
+  padding:0 1rem;
+  color:#ff0033;
+  font-size:1.2rem;
+  text-shadow:0 0 8px #ff0033;
+  font-weight:700;
+}
+
+.games{
+  max-width:1200px;
+  margin:1rem auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1.5rem;
+  padding:0 1rem;
+  transition:opacity .3s ease;
+}
+
+.games.fade{opacity:0;}
+
+.card{
+  background:#0b0b0f;
+  border:1px solid #ff003344;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+  box-shadow:0 0 10px #ff003322;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 0 20px #ff0033aa;
+}
+
+.card img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  border-bottom:1px solid #ff0033;
+}
+
+.card h3{
+  padding:0.7rem;
+  color:#ff0033;
+  font-weight:700;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+}
+
+.modal-content{
+  max-width:850px;
+  margin:3rem auto;
+  background:#0b0b0f;
+  border:1px solid #ff0033;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 0 25px #ff0033aa;
+}
+
+.modal img{
+  width:100%;
+  height:360px;
+  object-fit:cover;
+  border-bottom:2px solid #ff0033;
+}
+
+.modal-body{
+  padding:2rem;
+  font-size:1.05rem;
+  line-height:1.8;
+  font-weight:500;
+}
+
+.close{
+  float:right;
+  font-size:2.5rem;
+  cursor:pointer;
+  color:#ff0033;
+  text-shadow:0 0 10px #ff0033;
+}
+
+.btn{
+  display:inline-block;
+  margin-top:1rem;
+  padding:0.7rem 1.5rem;
+  background:#ff0033;
+  color:#000;
+  border-radius:8px;
+  text-decoration:none;
+  box-shadow:0 0 15px #ff0033;
+}
+
+.like{
+  font-size:1.7rem;
+  cursor:pointer;
+  margin-left:1rem;
+  color:#555;
+  transition:.2s;
+}
+
+.like.active{
+  color:#ff0033;
+  text-shadow:0 0 10px #ff0033;
+}
+
+.counter{
+  color:#ff0033;
+  margin-left:6px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+<h3>Kategorie</h3>
+
+<button class="sidebar-liked" onclick="toggleLikedView()">
+❤️ Ulubione <span id="count">0</span>
+</button>
+
+<button class="cat-btn active" onclick="setCat('all')">Wszystkie</button>
+<button class="cat-btn" onclick="setCat('horror')">Horror</button>
+<button class="cat-btn" onclick="setCat('fps')">FPS</button>
+<button class="cat-btn" onclick="setCat('sandbox')">Sandbox</button>
+<button class="cat-btn" onclick="setCat('racing')">Wyścigi</button>
+</div>
+
+<div class="main">
+
+<header>
+<h1>🎮 GamesZone</h1>
+</header>
+
+<div class="controls">
+<input id="search" placeholder="Szukaj gry..." oninput="render()" />
+<select id="sort">
+  <option value="az">A-Z</option>
+  <option value="za">Z-A</option>
+</select>
+</div>
+
+<div class="section-title" id="title">🎮 Gry</div>
+<div class="games" id="games"></div>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img id="mimg" />
+    <div class="modal-body">
+      <h2 id="mtitle"></h2>
+      <h3>📖 Historia</h3>
+      <p id="mhist"></p>
+      <h3>🎮 Gameplay</h3>
+      <p id="mgame"></p>
+      <a id="mlink" class="btn" target="_blank">🌐 Strona gry</a>
+      <span id="likeBtn" class="like" onclick="toggleLike()">❤</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const games=[
+{name:"League of Legends",cat:"fps",img:"https://via.placeholder.com/400x260?text=LoL",hist:"League of Legends to globalny fenomen MOBA od Riot Games. Akcja dzieje się w świecie Runeterry, gdzie dziesiątki bohaterów reprezentują różne regiony i konflikty. Gra rozwinęła ogromną scenę esportową i stale otrzymuje aktualizacje fabularne oraz wydarzenia.",game:"Rozgrywka 5v5 na mapie Summoner’s Rift. Każdy gracz kontroluje bohatera z unikalnym zestawem umiejętności. Celem jest zniszczenie Nexusa przeciwnika poprzez współpracę, kontrolę mapy i rozwój postaci podczas meczu.",link:"https://www.leagueoflegends.com"},
+{name:"Cyberpunk 2077",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Cyberpunk",hist:"Futurystyczne RPG w Night City, gdzie technologia miesza się z przestępczością.",game:"Wybory fabularne, rozwój postaci i różne style rozgrywki.",link:"https://cyberpunk.net"},
+{name:"Red Dead Redemption II",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=RDR2",hist:"Historia gangu na Dzikim Zachodzie i końca ery rewolwerowców.",game:"Eksploracja, polowanie, relacje i realistyczny świat.",link:"https://rockstargames.com"},
+{name:"Need for Speed",cat:"racing",img:"https://via.placeholder.com/400x260?text=NFS",hist:"Seria wyścigów ulicznych z tuningiem i pościgami policyjnymi.",game:"Szybkie wyścigi, ulepszanie aut i rywalizacja.",link:"https://ea.com"},
+{name:"The Forest",cat:"horror",img:"https://via.placeholder.com/400x260?text=The+Forest",hist:"Po katastrofie trafiasz na wyspę pełną mutantów.",game:"Budowanie, survival i eksploracja.",link:"https://endnightgames.com"},
+{name:"Sons of the Forest",cat:"horror",img:"https://via.placeholder.com/400x260?text=Sons+Forest",hist:"Rozwinięcie pierwszej części z większym światem.",game:"Nowe mechaniki survivalu i AI.",link:"https://endnightgames.com"},
+{name:"Phasmophobia",cat:"horror",img:"https://via.placeholder.com/400x260?text=Phasmophobia",hist:"Badanie zjawisk paranormalnych.",game:"Kooperacyjne zbieranie dowodów.",link:"https://kineticgames.co.uk"},
+{name:"Roblox",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Roblox",hist:"Platforma do tworzenia i grania w gry.",game:"Miliony trybów i kreatywność.",link:"https://roblox.com"},
+{name:"Fortnite",cat:"fps",img:"https://via.placeholder.com/400x260?text=Fortnite",hist:"Battle Royale z budowaniem.",game:"100 graczy walczy o przetrwanie.",link:"https://fortnite.com"},
+{name:"Human Fall Flat",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Human+Fall+Flat",hist:"Zabawna gra fizyczna z zagadkami.",game:"Kooperacyjne rozwiązywanie poziomów.",link:"https://curvegames.com"},
+{name:"Minecraft",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Minecraft",hist:"Ikoniczny sandbox o nieograniczonej kreatywności.",game:"Budowanie, survival, redstone.",link:"https://minecraft.net"},
+{name:"Silent Hill 2",cat:"horror",img:"https://via.placeholder.com/400x260?text=Silent+Hill+2",hist:"Psychologiczny horror o winie i traumie.",game:"Eksploracja i zagadki.",link:"https://konami.com"},
+{name:"Resident Evil 1",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE1",hist:"Początek serii – rezydencja pełna zombie.",game:"Survival horror i eksploracja.",link:"https://capcom.com"},
+{name:"Resident Evil 2",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE2",hist:"Miasto Raccoon City opanowane przez wirus.",game:"Akcja i survival.",link:"https://capcom.com"},
+{name:"Resident Evil 3",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE3",hist:"Ucieczka przed Nemesis.",game:"Szybka akcja.",link:"https://capcom.com"},
+{name:"Resident Evil 4",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE4",hist:"Ratowanie córki prezydenta.",game:"Akcja + horror.",link:"https://capcom.com"},
+{name:"Resident Evil 5",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE5",hist:"Akcja w Afryce.",game:"Kooperacja.",link:"https://capcom.com"},
+{name:"Resident Evil 6",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE6",hist:"Wiele kampanii.",game:"Dynamiczna akcja.",link:"https://capcom.com"},
+{name:"Resident Evil 7",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE7",hist:"Powrót do horroru z widokiem FPP.",game:"Eksploracja domu.",link:"https://capcom.com"},
+{name:"Resident Evil 8 Village",cat:"horror",img:"https://via.placeholder.com/400x260?text=RE8",hist:"Kontynuacja RE7 z nowymi potworami.",game:"Eksploracja i walka.",link:"https://capcom.com"},
+{name:"Forza Horizon 5",cat:"racing",img:"https://via.placeholder.com/400x260?text=Forza+H5",hist:"Wyścigi open world w Meksyku.",game:"Eksploracja i eventy.",link:"https://forzamotorsport.net"},
+{name:"Spider-Man 2",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Spider-Man+2",hist:"Dwóch Spider-Manów walczy z nowymi zagrożeniami.",game:"Szybkie przemieszczanie i walka.",link:"https://playstation.com"},
+{name:"FC 25",cat:"sports",img:"https://via.placeholder.com/400x260?text=FC+25",hist:"Nowa odsłona piłki od EA.",game:"Mecze i tryby.",link:"https://ea.com"},
+{name:"FC 26",cat:"sports",img:"https://via.placeholder.com/400x260?text=FC+26",hist:"Kolejna generacja symulatora piłki.",game:"Jeszcze lepsza rozgrywka.",link:"https://ea.com"},
+{name:"CS2",cat:"fps",img:"https://via.placeholder.com/400x260?text=CS2",hist:"Nowa odsłona Counter-Strike.",game:"Taktyczne rundy 5v5.",link:"https://counter-strike.net"},
+{name:"Five Nights at Freddy's",cat:"horror",img:"https://via.placeholder.com/400x260?text=FNAF",hist:"Strażnik w nawiedzonej pizzerii.",game:"Monitoring i zarządzanie energią.",link:"https://fivenightsatfreddys.com"},
+{name:"Ultimate Chicken Horse",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=UCH",hist:"Chaotyczna gra imprezowa gdzie gracze budują poziom.",game:"Tworzysz przeszkody i próbujesz przeżyć.",link:"https://cleverendeavourgames.com"},
+{name:"Subnautica",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Subnautica",hist:"Eksploracja oceanu obcej planety.",game:"Survival pod wodą.",link:"https://unknownworlds.com"},
+{name:"Don't Starve Together",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=DST",hist:"Kooperacyjny survival w mrocznym świecie.",game:"Zbieranie, walka i przetrwanie.",link:"https://klei.com"},
+{name:"House Flipper 2",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=HF2",hist:"Remontowanie domów.",game:"Sprzątanie i dekorowanie.",link:"https://houseflipper2.com"},
+{name:"I Am Fish",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=I+Am+Fish",hist:"Ryby próbują uciec do oceanu.",game:"Fizyka i zręczność.",link:"https://bossastudios.com"},
+{name:"Pacify",cat:"horror",img:"https://via.placeholder.com/400x260?text=Pacify",hist:"Dom nawiedzony przez dziewczynkę.",game:"Kooperacja i ucieczka.",link:"https://store.steampowered.com"},
+{name:"PICO PARK",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=PICO",hist:"Gra o współpracy.",game:"Zagadki multiplayer.",link:"https://pico-park.com"},
+{name:"ROUNDS",cat:"fps",img:"https://via.placeholder.com/400x260?text=ROUNDS",hist:"Pojedynki PvP z ulepszeniami.",game:"Strzelanie 1v1.",link:"https://store.steampowered.com"},
+{name:"Storyteller",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Storyteller",hist:"Tworzenie historii.",game:"Układanie scen.",link:"https://annapurnainteractive.com"},
+{name:"Surgeon Simulator 2",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Surgeon",hist:"Chaotyczna operacja.",game:"Fizyka i współpraca.",link:"https://surgeonsim.com"},
+{name:"The Baby In Yellow",cat:"horror",img:"https://via.placeholder.com/400x260?text=Baby",hist:"Opieka nad dziwnym dzieckiem.",game:"Zadania i horror.",link:"https://itch.io"},
+{name:"Rust",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Rust",hist:"Brutalny survival online.",game:"Budowanie i PvP.",link:"https://rust.facepunch.com"},
+{name:"Slime Rancher",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Slime",hist:"Farma slime’ów.",game:"Zbieranie i rozwój.",link:"https://monomipark.com"},
+{name:"Geometry Dash",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=GD",hist:"Rytmiczna gra platformowa.",game:"Refleks i timing.",link:"https://robtopgames.com"},
+{name:"Genshin Impact",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Genshin",hist:"Anime RPG open world.",game:"Eksploracja i walka.",link:"https://genshin.hoyoverse.com"},
+{name:"Little Nightmares I",cat:"horror",img:"https://via.placeholder.com/400x260?text=LN1",hist:"Pierwsza część mrocznej przygodówki o dziewczynce Six uciekającej z tajemniczego statku.",game:"Skradanie, zagadki i unikanie potworów.",link:"https://bandainamcoent.com"},
+{name:"Little Nightmares II",cat:"horror",img:"https://via.placeholder.com/400x260?text=LN2",hist:"Kontynuacja historii z nowym bohaterem Mono i jeszcze mroczniejszym światem.",game:"Więcej zagadek, eksploracji i napięcia.",link:"https://bandainamcoent.com"},
+{name:"It Takes Two",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=It+Takes+Two",hist:"Historia relacji.",game:"Kooperacyjne wyzwania.",link:"https://ea.com"},
+{name:"A Way Out",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=A+Way+Out",hist:"Ucieczka z więzienia.",game:"Kooperacja.",link:"https://ea.com"},
+{name:"F1 24",cat:"racing",img:"https://via.placeholder.com/400x260?text=F1+24",hist:"Sezon Formuły 1 2024.",game:"Wyścigi i kariera.",link:"https://ea.com"},
+{name:"F1 25",cat:"racing",img:"https://via.placeholder.com/400x260?text=F1+25",hist:"Nowy sezon F1.",game:"Realistyczne wyścigi.",link:"https://ea.com"},
+{name:"Dead by Daylight",cat:"horror",img:"https://via.placeholder.com/400x260?text=DBD",hist:"Multiplayer horror.",game:"4 vs 1.",link:"https://deadbydaylight.com"},
+{name:"Diablo IV",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Diablo",hist:"Mroczne RPG hack&slash.",game:"Loot i walka.",link:"https://blizzard.com"},
+{name:"Wiedźmin 3: Dziki Gon",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Witcher+3",hist:"Historia Geralta.",game:"Questy i eksploracja.",link:"https://thewitcher.com"},
+{name:"Raft",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Raft",hist:"Przetrwanie na oceanie.",game:"Budowa tratwy.",link:"https://raft-game.com"},
+{name:"The Sims 3",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Sims+3",hist:"Symulator życia z otwartym światem i dużą swobodą.",game:"Tworzenie postaci, kariera i relacje.",link:"https://ea.com"},
+{name:"The Sims 4",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Sims+4",hist:"Nowoczesna wersja Simsów z rozbudowanymi emocjami postaci.",game:"Budowanie, życie i rozwój Simów.",link:"https://ea.com"},
+{name:"Yapyap",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Yapyap",hist:"Humorystyczna gra indie z absurdalnym światem i dziwnymi postaciami.",game:"Eksploracja, interakcje i eksperymentowanie z fizyką świata.",link:"https://store.steampowered.com"},
+{name:"House Builder",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=House+Builder",hist:"Symulator budowania domów w różnych stylach architektonicznych.",game:"Zbierasz materiały i budujesz od fundamentów po dach.",link:"https://store.steampowered.com"},
+{name:"Order 13",cat:"horror",img:"https://via.placeholder.com/400x260?text=Order+13",hist:"Klimatyczny horror z tajemniczym miejscem i mroczną historią.",game:"Eksploracja i rozwiązywanie zagadek w niebezpiecznym otoczeniu.",link:"https://store.steampowered.com"},
+{name:"Surgeon Simulator",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Surgeon+Simulator",hist:"Chaotyczny symulator operacji chirurgicznych.",game:"Sterujesz ręką i wykonujesz nieprzewidywalne operacje.",link:"https://store.steampowered.com"},
+{name:"Poppy Playtime",cat:"horror",img:"https://via.placeholder.com/400x260?text=Poppy+Playtime",hist:"Horror w opuszczonej fabryce zabawek.",game:"Rozwiązujesz zagadki i unikasz potworów.",link:"https://poppyplaytime.com"},
+{name:"PEAK",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=PEAK",hist:"Gra o wspinaczce i zdobywaniu górskich szczytów.",game:"Planowanie trasy i zarządzanie wytrzymałością.",link:"https://store.steampowered.com"},
+{name:"R.E.P.O.",cat:"horror",img:"https://via.placeholder.com/400x260?text=REPO",hist:"Mroczny indie horror z tajemniczym światem.",game:"Eksploracja i unikanie zagrożeń.",link:"https://store.steampowered.com"},
+{name:"Slime Rancher 2",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Slime+2",hist:"Kolorowa gra o hodowli slime’ów.",game:"Zbieranie i rozwój farmy slime’ów.",link:"https://slimerancher.com"},
+{name:"Buckshot",cat:"horror",img:"https://via.placeholder.com/400x260?text=Buckshot",hist:"Gra o ryzyku i napięciu inspirowana ruletką.",game:"Podejmujesz ryzyko w kolejnych rundach.",link:"https://store.steampowered.com"},
+{name:"Need for Speed Playback",cat:"racing",img:"https://via.placeholder.com/400x260?text=NFS+Playback",hist:"Wyścigi uliczne z pościgami i fabułą.",game:"Szybkie wyścigi i tuning aut.",link:"https://ea.com"},
+{name:"PRAGMATA",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=PRAGMATA",hist:"Sci-fi gra od Capcom osadzona na księżycu.",game:"Eksploracja i zagadki w futurystycznym świecie.",link:"https://capcom.com"},
+{name:"BeamNG.drive",cat:"racing",img:"https://via.placeholder.com/400x260?text=BeamNG",hist:"Realistyczny symulator jazdy i zniszczeń pojazdów.",game:"Testujesz fizykę i prowadzisz auta w różnych warunkach.",link:"https://beamng.com"},
+{name:"Gang Beasts",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Gang+Beasts",hist:"Zabawna gra multiplayer z ragdollową fizyką.",game:"Walka i wyrzucanie przeciwników z areny.",link:"https://gangbeasts.com"},
+{name:"GTA V",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=GTA+V",hist:"Trzech bohaterów w kryminalnym świecie Los Santos.",game:"Misje, eksploracja i swobodna rozgrywka.",link:"https://rockstargames.com"},
+{name:"GTA San Andreas",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=GTA+SA",hist:"Historia Carla Johnsona w świecie gangów.",game:"Misje fabularne i eksploracja miasta.",link:"https://rockstargames.com"},
+{name:"Hollow Knight",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Hollow+Knight",hist:"Mroczna przygoda w podziemnym królestwie owadów.",game:"Walki, eksploracja i rozwój postaci.",link:"https://hollowknight.com"},
+{name:"Dredge",cat:"horror",img:"https://via.placeholder.com/400x260?text=Dredge",hist:"Łowienie ryb w mrocznym, niepokojącym świecie.",game:"Eksploracja oceanu i zarządzanie zasobami.",link:"https://dredge.game"},
+{name:"Jusant",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=Jusant",hist:"Relaksacyjna gra o wspinaczce i odkrywaniu wieży.",game:"Wspinaczka i rozwiązywanie środowiskowych zagadek.",link:"https://dont-nod.com"},
+{name:"SuchArt",cat:"sandbox",img:"https://via.placeholder.com/400x260?text=SuchArt",hist:"Gra o malowaniu i sztuce w kosmosie.",game:"Tworzenie obrazów i eksperymentowanie z farbami.",link:"https://store.steampowered.com"},
+{name:"We Were Here Forever",cat:"horror",img:"https://via.placeholder.com/400x260?text=We+Were+Here+Forever",hist:"Kooperacyjna gra logiczna w tajemniczym zamku.",game:"Rozwiązywanie zagadek w duecie.",link:"https://totalmayhemgames.com"},
+{name:"We Were Here Together",cat:"horror",img:"https://via.placeholder.com/400x260?text=We+Were+Here",hist:"Kontynuacja kooperacyjnych zagadek.",game:"Współpraca i komunikacja między graczami.",link:"https://totalmayhemgames.com"},
+{name:"Little Nightmares III",cat:"horror",img:"https://via.placeholder.com/400x260?text=LN3",hist:"Nowa część mrocznej serii o ucieczce z koszmarnego świata.",game:"Eksploracja, zagadki i unikanie potworów.",link:"https://bandainamcoent.com"},
+];
+
+let current=null;
+let liked=JSON.parse(localStorage.getItem("liked")||"{}");
+let cat="all";
+let likedView=false;
+
+function setCat(c){
+cat=c;
+document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+render();
+}
+
+function animateRender(list){
+const box=document.getElementById("games");
+box.classList.add("fade");
+setTimeout(()=>{
+box.innerHTML=list.map(g=>`
+<div class='card' onclick='openM(${games.indexOf(g)})'>
+<img src='${g.img}' />
+<h3>${g.name}</h3>
+</div>`).join('');
+box.classList.remove("fade");
+},200);
+}
+
+function render(){
+const s=document.getElementById("search").value.toLowerCase();
+const sort=document.getElementById("sort").value;
+
+let list=games.filter(g=>g.name.toLowerCase().includes(s)&&(cat=="all"||g.cat==cat));
+
+list.sort((a,b)=>sort=="az"?a.name.localeCompare(b.name):b.name.localeCompare(a.name));
+
+if(likedView){
+list=list.filter((g,i)=>liked[games.indexOf(g)]);
+}
+
+animateRender(list);
+updateCount();
+}
+
+function updateCount(){
+document.getElementById("count").innerText=Object.values(liked).filter(Boolean).length;
+}
+
+function toggleLikedView(){
+likedView=!likedView;
+render();
+}
+
+function openM(i){
+current=i;
+const g=games[i];
+
+mimg.src=g.img;
+mtitle.innerText=g.name;
+mhist.innerText=g.hist;
+mgame.innerText=g.game;
+mlink.href=g.link;
+
+updateLike();
+modal.style.display='block';
+}
+
+function closeModal(){modal.style.display='none';}
+
+function toggleLike(){
+liked[current]=!liked[current];
+localStorage.setItem("liked",JSON.stringify(liked));
+updateLike();
+render();
+}
+
+function updateLike(){
+const el=document.getElementById("likeBtn");
+liked[current]?el.classList.add("active"):el.classList.remove("active");
+}
+
+render();
+</script>
+
+</body>
+</html>
